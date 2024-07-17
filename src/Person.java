@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class Person {
+public abstract class Person {
     private String name;
     private Person father;
     private Person mother;
@@ -44,4 +44,6 @@ public class Person {
     public String toString() {
         return name;
     }
+
+    public abstract String getGender();
 }
