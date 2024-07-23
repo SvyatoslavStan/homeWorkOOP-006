@@ -1,19 +1,22 @@
-import java.util.List;
+package familytree.service;
 
-public class Research implements FamilyResearch {
+import familytree.model.FamilyTree;
+import familytree.model.Person;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class FamilyResearch implements IFamilyResearch {
     private FamilyTree familyTree;
 
-    public Research(FamilyTree familyTree) {
+    public FamilyResearch(FamilyTree familyTree) {
         this.familyTree = familyTree;
     }
 
     @Override
     public List<Person> getChildren(String name) {
         Person person = familyTree.findPerson(name);
-        if (person != null) {
-            return person.getChildren();
-        }
-        return null;
+        return person != null ? person.getChildren() : null;
     }
 
     @Override
@@ -34,11 +37,11 @@ public class Research implements FamilyResearch {
             if (father != null) {
                 return father.getChildren().stream()
                         .filter(child -> !child.equals(person))
-                        .toList();
+                        .collect(Collectors.toList());
             } else if (mother != null) {
                 return mother.getChildren().stream()
                         .filter(child -> !child.equals(person))
-                        .toList();
+                        .collect(Collectors.toList());
             }
         }
         return null;
