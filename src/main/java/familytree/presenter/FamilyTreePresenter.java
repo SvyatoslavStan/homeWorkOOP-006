@@ -1,24 +1,15 @@
 package familytree.presenter;
 
-import familytree.model.FamilyTree;
-import familytree.model.Person;
 import familytree.view.FamilyTreeView;
-import familytree.service.FamilyResearch;
-import familytree.service.FileOperations;
-
-import java.time.LocalDate;
+import familytree.service.FamilyTreeService;
 
 public class FamilyTreePresenter {
-    private FamilyTree<Person> model;
+    private FamilyTreeService service;
     private FamilyTreeView view;
-    private FamilyResearch research;
-    private FileOperations fileOps;
 
-    public FamilyTreePresenter(FamilyTree<Person> model, FamilyTreeView view) {
-        this.model = model;
+    public FamilyTreePresenter(FamilyTreeService service, FamilyTreeView view) {
+        this.service = service;
         this.view = view;
-        this.research = new FamilyResearch(model);
-        this.fileOps = new FileOperations();
     }
 
     public void run() {
@@ -37,11 +28,11 @@ public class FamilyTreePresenter {
                     showAllMembers();
                     break;
                 case 4:
-                    model.sortByName();
+                    service.sortByName();
                     view.displayMessage("Отсортировано по имени");
                     break;
                 case 5:
-                    model.sortByBirthDate();
+                    service.sortByBirthDate();
                     view.displayMessage("Отсортировано по дате рождения");
                     break;
                 case 6:
@@ -60,19 +51,16 @@ public class FamilyTreePresenter {
 
     private void addPerson() {
         String name = view.getInput("Введите имя: ");
-        String genderInput = view.getInput("Введите пол (М/Ж): ");
-        String gender = genderInput.trim().equalsIgnoreCase("М") ? "Мужской" : "Женский";
+        String gender = view.getInput("Введите пол (М/Ж): ");
         String birthDateInput = view.getInput("Введите дату рождения (ГГГГ-ММ-ДД): ");
-        LocalDate birthDate = LocalDate.parse(birthDateInput);
-
-        Person person = new Person(name, gender, birthDate);
-        model.addMember(person);
+        
+        service.addPerson(name, gender, birthDateInput);
         view.displayMessage("Человек добавлен в семейное дерево.");
     }
 
     private void findPerson() {
         String name = view.getInput("Введите имя для поиска: ");
-        Person person = model.findPerson(name);
+        var person = service.findPerson(name);
         if (person != null) {
             view.displayMessage("Найдено:");
             view.displayPerson(person);
@@ -83,13 +71,13 @@ public class FamilyTreePresenter {
 
     private void showAllMembers() {
         view.displayMessage("Все члены семьи:");
-        view.displayPersonList(model.getMembers());
+        view.displayPersonList(service.getAllMembers());
     }
 
     private void saveToFile() {
         String fileName = view.getInput("Введите имя файла для сохранения: ");
         try {
-            fileOps.saveToFile(fileName, model);
+            service.saveToFile(fileName);
             view.displayMessage("Семейное дерево сохранено в файл.");
         } catch (Exception e) {
             view.displayMessage("Ошибка при сохранении: " + e.getMessage());
@@ -99,8 +87,7 @@ public class FamilyTreePresenter {
     private void loadFromFile() {
         String fileName = view.getInput("Введите имя файла для загрузки: ");
         try {
-            model = (FamilyTree<Person>) fileOps.loadFromFile(fileName);
-            research = new FamilyResearch(model);
+            service.loadFromFile(fileName);
             view.displayMessage("Семейное дерево загружено из файла.");
         } catch (Exception e) {
             view.displayMessage("Ошибка при загрузке: " + e.getMessage());

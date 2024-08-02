@@ -1,18 +1,17 @@
 package familytree;
 
-import familytree.model.FamilyTree;
-import familytree.model.Person;
 import familytree.view.ConsoleFamilyTreeView;
 import familytree.presenter.FamilyTreePresenter;
+import familytree.service.FamilyTreeService;
 
 public class Main {
     public static void main(String[] args) {
         System.setProperty("file.encoding", "UTF-8");
         System.setProperty("console.encoding", "UTF-8");
 
-        FamilyTree<Person> model = new FamilyTree<>();
+        FamilyTreeService service = new FamilyTreeService();
         ConsoleFamilyTreeView view = new ConsoleFamilyTreeView();
-        FamilyTreePresenter presenter = new FamilyTreePresenter(model, view);
+        FamilyTreePresenter presenter = new FamilyTreePresenter(service, view);
 
         presenter.run();
     }
